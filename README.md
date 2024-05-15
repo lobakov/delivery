@@ -1,1 +1,1 @@
-# delivery
+# Проект для тренинга Domain Driven Design and Clean Architecture in practice
