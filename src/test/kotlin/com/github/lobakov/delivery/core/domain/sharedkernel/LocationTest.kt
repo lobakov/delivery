@@ -1,5 +1,9 @@
 package com.github.lobakov.delivery.core.domain.sharedkernel
 
+import com.github.lobakov.delivery.core.domain.sharedkernel.Location.Companion.MAX_X
+import com.github.lobakov.delivery.core.domain.sharedkernel.Location.Companion.MAX_Y
+import com.github.lobakov.delivery.core.domain.sharedkernel.Location.Companion.MIN_X
+import com.github.lobakov.delivery.core.domain.sharedkernel.Location.Companion.MIN_Y
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.assertThrows
@@ -26,7 +30,11 @@ class LocationTest {
     @ParameterizedTest
     @MethodSource("generateInvalidCoordinates")
     fun `should throw IllegalArgumentException when x or y is out of range`(coordinate: Coordinate) {
-        val expectedExceptionMessage = "Location coordinates are out of valid range. Should be in range [1..10]"
+        val expectedExceptionMessage = """
+               Location coordinates are out of valid range.
+               X Should be in range [$MIN_X..$MAX_X]
+               Y Should be in range [$MIN_Y..$MAX_Y]
+            """
         val expectedX = coordinate.x
         val expectedY = coordinate.y
 

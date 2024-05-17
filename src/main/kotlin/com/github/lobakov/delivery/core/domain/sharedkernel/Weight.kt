@@ -11,6 +11,6 @@ data class Weight(
     override fun compareTo(other: Weight): Int = compareValues(kg, other.kg)
 
     companion object {
-        private const val MIN_WEIGHT = 1
+        const val MIN_WEIGHT = 1
     }
 }

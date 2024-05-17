@@ -1,5 +1,6 @@
 package com.github.lobakov.delivery.core.domain.sharedkernel
 
+import com.github.lobakov.delivery.core.domain.sharedkernel.Weight.Companion.MIN_WEIGHT
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
@@ -19,7 +20,7 @@ class WeightTest {
     @ParameterizedTest
     @ValueSource(ints = [Integer.MIN_VALUE, -10, -1, 0])
     fun `should throw IllegalArgumentException when x or y is out of range`(kg: Int) {
-        val expectedExceptionMessage = "Weight should not be less than 1 kg"
+        val expectedExceptionMessage = "Weight should not be less than $MIN_WEIGHT kg"
 
         val exception = assertThrows<IllegalArgumentException> { Weight(kg) }
 
