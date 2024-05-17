@@ -1,73 +1,81 @@
 package com.github.lobakov.delivery.core.domain.sharedkernel
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest
 class LocationTest {
 
     @ParameterizedTest
-    @MethodSource("generateValidArgs")
-    fun `should allow create location with valid coordinates`(args: Pair<Int, Int>) {
-        val expectedX = args.first
-        val expectedY = args.second
+    @MethodSource("generateValidCoordinates")
+    fun `should allow create location with valid coordinates`(coordinate: Coordinate) {
+        val expectedX = coordinate.x
+        val expectedY = coordinate.y
 
         val sut = Location(expectedX, expectedY)
 
-        assertEquals(expectedX, sut.x)
-        assertEquals(expectedY, sut.y)
+        assertAll(
+            "Ensure coordinates were validated and set up properly",
+            { assertEquals(expectedX, sut.x) },
+            { assertEquals(expectedY, sut.y) }
+        )
     }
 
     @ParameterizedTest
-    @MethodSource("generateInvalidArgs")
-    fun `should throw IllegalArgumentException when x or y is out of range`(args: Pair<Int, Int>) {
-        val expectedX = args.first
-        val expectedY = args.second
+    @MethodSource("generateInvalidCoordinates")
+    fun `should throw IllegalArgumentException when x or y is out of range`(coordinate: Coordinate) {
+        val expectedExceptionMessage = "Location coordinates are out of valid range. Should be in range [1..10]"
+        val expectedX = coordinate.x
+        val expectedY = coordinate.y
 
-        assertThrows<IllegalArgumentException> {  Location(expectedX, expectedY) }
+        val actualException = assertThrows<IllegalArgumentException> { Location(expectedX, expectedY) }
+        assertEquals(expectedExceptionMessage, actualException.message)
     }
 
     @ParameterizedTest
     @MethodSource("generateTargetLocations")
-    fun `should properly count distance to target location`(args: Pair<Location, Int>) {
+    fun `should properly count distance to target location`(targetLocationAndExpectedDistance: TargetLocationAndExpectedDistance) {
         val sut = Location(1, 1)
-        val target = args.first
-        val expectedResult = args.second
+        val target = targetLocationAndExpectedDistance.target
+        val expectedDistance = targetLocationAndExpectedDistance.expectedDistance
 
-        val actualResult = sut.distanceTo(target)
+        val actualDistance = sut.distanceTo(target)
 
-        assertEquals(expectedResult, actualResult)
+        assertEquals(expectedDistance, actualDistance)
     }
 
     companion object {
         @JvmStatic
-        fun generateValidArgs() = listOf(
-            1 to 1,
-            3 to 2,
-            10 to 1,
-            1 to 10,
-            10 to 10
+        fun generateValidCoordinates() = listOf(
+            Coordinate(1, 1),
+            Coordinate(3, 2),
+            Coordinate(10, 1),
+            Coordinate(1, 10),
+            Coordinate(10, 10)
         )
 
         @JvmStatic
-        fun generateInvalidArgs() = listOf(
-            -1 to 1,
-            3 to -2,
-            0 to 11,
-            11 to 0,
-            1 to 11,
-            11 to 1
+        fun generateInvalidCoordinates() = listOf(
+            Coordinate(-1, 1),
+            Coordinate(3, -2),
+            Coordinate(0, 11),
+            Coordinate(1, 11),
+            Coordinate(11, 1),
+            Coordinate(11, 0)
         )
 
         @JvmStatic
         fun generateTargetLocations() = listOf(
-            Location(2, 2) to 2,
-            Location(3, 3) to 4,
-            Location(8, 7) to 13,
-            Location(10,10) to 18,
+            TargetLocationAndExpectedDistance(Location(2, 2), 2),
+            TargetLocationAndExpectedDistance(Location(3, 3), 4),
+            TargetLocationAndExpectedDistance(Location(8, 7), 13),
+            TargetLocationAndExpectedDistance(Location(10, 10), 18),
         )
     }
 }
+
+data class TargetLocationAndExpectedDistance(val target: Location, val expectedDistance: Int)
+
+data class Coordinate(val x: Int, val y: Int)

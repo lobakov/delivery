@@ -1,13 +1,11 @@
 package com.github.lobakov.delivery.core.domain.sharedkernel
 
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.junit.jupiter.params.provider.ValueSource
-import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest
 class WeightTest {
 
     @ParameterizedTest
@@ -15,34 +13,44 @@ class WeightTest {
     fun `should allow create weight with valid amount of kilograms`(kg: Int) {
         val sut = Weight(kg)
 
-        Assertions.assertEquals(kg, sut.kg)
+        assertEquals(kg, sut.kg)
     }
 
     @ParameterizedTest
     @ValueSource(ints = [Integer.MIN_VALUE, -10, -1, 0])
     fun `should throw IllegalArgumentException when x or y is out of range`(kg: Int) {
-        assertThrows<IllegalArgumentException> { Weight(kg) }
+        val expectedExceptionMessage = "Weight should not be less than 1 kg"
+
+        val exception = assertThrows<IllegalArgumentException> { Weight(kg) }
+
+        assertEquals(expectedExceptionMessage, exception.message)
     }
 
     @ParameterizedTest
     @MethodSource("generateComparableWeights")
-    fun `should properly compare weights`(args: Pair<Weight, Int>) {
+    fun `should properly compare weights`(weightToCompareAndExpectedRelation: WeightToCompareAndExpectedRelation) {
         val sut = Weight(5)
-        val anotherWeight = args.first
-        val expectedResult = args.second
+        val anotherWeight = weightToCompareAndExpectedRelation.weight
+        val expectedRelation = weightToCompareAndExpectedRelation.expectedRelation
 
-        val actualResult = sut.compareTo(anotherWeight)
+        val actualRelation = sut.compareTo(anotherWeight)
 
-        Assertions.assertEquals(expectedResult, actualResult)
+        assertEquals(expectedRelation, actualRelation)
     }
 
 
     companion object {
+        private const val LESS = -1
+        private const val GREATER = 1
+        private const val EQUAL = 0
+
         @JvmStatic
         fun generateComparableWeights() = listOf(
-            Weight(4) to 1,
-            Weight(5) to 0,
-            Weight(6) to -1
+            WeightToCompareAndExpectedRelation(Weight(4), GREATER),
+            WeightToCompareAndExpectedRelation(Weight(5), EQUAL),
+            WeightToCompareAndExpectedRelation(Weight(6), LESS)
         )
     }
 }
+
+data class WeightToCompareAndExpectedRelation(val weight: Weight, val expectedRelation: Int)
