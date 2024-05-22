@@ -24,7 +24,13 @@ data class Location(
         const val MIN_Y = 1
         const val MAX_X = 10
         const val MAX_Y = 10
+        const val LEFT = -1
+        const val RIGHT = 1
+        const val UP = -1
+        const val DOWN = 1
+        const val STEP = 1
         val X_RANGE = MIN_X..MAX_X
         val Y_RANGE = MIN_Y..MAX_Y
+        val INITIAL_LOCATION = Location(1, 1)
     }
 }

@@ -3,9 +3,10 @@ package com.github.lobakov.delivery.core.domain.courier
 import com.github.lobakov.delivery.core.domain.courier.CourierStatus.*
 import com.github.lobakov.delivery.core.domain.courier.TransportType.CAR
 import com.github.lobakov.delivery.core.domain.order.Order
-import com.github.lobakov.delivery.core.domain.order.OrderStatus.*
 import com.github.lobakov.delivery.core.domain.sharedkernel.Location
+import com.github.lobakov.delivery.core.domain.sharedkernel.Location.Companion.INITIAL_LOCATION
 import com.github.lobakov.delivery.core.domain.sharedkernel.Weight
+import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -14,199 +15,211 @@ import java.util.*
 class CourierTest {
 
     @Test
-    fun `should properly initialize courier on creation`() {
-        val sut = DEFAULT_COURIER
+    fun `courier should be initialized with default location and NOT AVAILABLE status on creation`() {
+        //Given, When
+        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
 
-        assertEquals(DEFAULT_NAME, sut.name)
-        assertEquals(DEFAULT_TRANSPORT, sut.transport)
-        assertEquals(NOT_AVAILABLE, sut.status)
-        assertEquals(DEFAULT_LOCATION, sut.currentLocation)
+        //Then
+        assertAll(
+            "Ensure courier was initialized properly",
+            { assertEquals(DEFAULT_NAME, sut.name) },
+            { assertEquals(DEFAULT_TRANSPORT, sut.transport) },
+            { assertEquals(NOT_AVAILABLE, sut.status) },
+            { assertEquals(DEFAULT_LOCATION, sut.currentLocation) },
+        )
     }
 
     @Test
-    fun `should properly start working day`() {
-        val sut = DEFAULT_COURIER
+    fun `courier should transition to READY status when starting working day`() {
+        //Given
+        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
 
-        assertEquals(NOT_AVAILABLE, sut.status)
-
+        //When
         sut.startWorkingDay()
 
+        //Then
         assertEquals(READY, sut.status)
     }
 
     @Test
-    fun `should throw exception on starting working day when day already started`() {
-        val sut = DEFAULT_COURIER
-
-        assertEquals(NOT_AVAILABLE, sut.status)
-
+    fun `courier should throw exception on starting working day when working day has already started`() {
+        //Given
+        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
         sut.startWorkingDay()
 
-        assertEquals(READY, sut.status)
-
-        val expectedExceptionMessage = "Working day has already started"
-
-        val actualException = assertThrows<IllegalArgumentException> { sut.startWorkingDay() }
-        assertEquals(expectedExceptionMessage, actualException.message)
+        //When, Then
+        val actualException = assertThrows<IllegalArgumentException> {
+            sut.startWorkingDay()
+        }
+        assertEquals("Working day has already started", actualException.message)
     }
 
     @Test
-    fun `should throw exception on finishing working day when day has not yet started`() {
-        val sut = DEFAULT_COURIER
+    fun `courier should throw exception on finishing working day when working day has not started`() {
+        //Given
+        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
 
-        assertEquals(NOT_AVAILABLE, sut.status)
-
-        val expectedExceptionMessage = "Cannot finish the working day, the courier is in ${sut.status} status"
-
-        val actualException = assertThrows<IllegalArgumentException> { sut.finishWorkingDay() }
-        assertEquals(expectedExceptionMessage, actualException.message)
+        //When, Then
+        val actualException = assertThrows<IllegalArgumentException> {
+            sut.finishWorkingDay()
+        }
+        assertEquals(
+            "Cannot finish the working day, the courier is in ${sut.status} status",
+            actualException.message
+        )
     }
 
     @Test
-    fun `should properly assign order`() {
-        val sutCourier = DEFAULT_COURIER
-        val sutOrder = Order(UUID.randomUUID(), DEFAULT_LOCATION, DEFAULT_WEIGHT)
-
-        assertEquals(NOT_AVAILABLE, sutCourier.status)
-
-        sutCourier.startWorkingDay()
-
-        assertEquals(READY, sutCourier.status)
-        assertEquals(CREATED, sutOrder.status)
-
-        sutCourier.assign(sutOrder)
-
-        assertEquals(BUSY, sutCourier.status)
-        assertEquals(ASSIGNED, sutOrder.status)
-        assertEquals(sutCourier.id, sutOrder.courierId)
-    }
-
-    @Test
-    fun `should properly close order`() {
-        val sut = DEFAULT_COURIER
+    fun `courier should transition to BUSY status when order assigned`() {
+        //Given
+        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
         val order = Order(UUID.randomUUID(), DEFAULT_LOCATION, DEFAULT_WEIGHT)
 
-        assertEquals(NOT_AVAILABLE, sut.status)
-
+        //When
         sut.startWorkingDay()
-
-        assertEquals(READY, sut.status)
-        assertEquals(CREATED, order.status)
-
         sut.assign(order)
 
+        //Then
         assertEquals(BUSY, sut.status)
-        assertEquals(ASSIGNED, order.status)
+    }
 
+    @Test
+    fun `courier should transition to READY status when order is delivered`() {
+        //Given
+        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
+        val order = Order(UUID.randomUUID(), DEFAULT_LOCATION, DEFAULT_WEIGHT)
+        sut.startWorkingDay()
+        sut.assign(order)
+
+        //When
         sut.close(order)
 
+        //Then
         assertEquals(READY, sut.status)
-        assertEquals(COMPLETED, order.status)
     }
 
     @Test
-    fun `should throw exception on finishing working day when delivering goods`() {
-        val sut = DEFAULT_COURIER
+    fun `courier should throw exception on finishing working day when delivering goods`() {
+        //Given
+        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
+        sut.startWorkingDay()
+
         val order = Order(UUID.randomUUID(), DEFAULT_LOCATION, DEFAULT_WEIGHT)
-
-        assertEquals(NOT_AVAILABLE, sut.status)
-
-        sut.startWorkingDay()
-
-        assertEquals(READY, sut.status)
-
         sut.assign(order)
 
-        val expectedExceptionMessage = "Cannot finish the working day, the courier is in ${sut.status} status"
-
-        val actualException = assertThrows<IllegalArgumentException> { sut.finishWorkingDay() }
-        assertEquals(expectedExceptionMessage, actualException.message)
+        //When, Then
+        val actualException = assertThrows<IllegalArgumentException> {
+            sut.finishWorkingDay()
+        }
+        assertEquals(
+            "Cannot finish the working day, the courier is in ${sut.status} status",
+            actualException.message
+        )
     }
 
     @Test
-    fun `should properly determine step count`() {
-        val sut = DEFAULT_COURIER
+    fun `courier should properly determine step count`() {
+        //Given
+        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
         val order = Order(UUID.randomUUID(), CENTER_LOCATION, DEFAULT_WEIGHT)
-
         sut.startWorkingDay()
         sut.assign(order)
 
-        val expectedStepCount = 2
-        assertEquals(expectedStepCount, sut.getStepCount(order.deliverTo))
+        //When
+        val actualStepCount = sut.getStepCount(order.deliverTo)
+
+        //Then
+        assertEquals(2, actualStepCount)
     }
 
     @Test
-    fun `should properly move down and forward`() {
-        val sut = DEFAULT_COURIER
+    fun `courier should properly determine when destination has been reached`() {
+        //Given
+        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
+        sut.startWorkingDay()
+
         val order = Order(UUID.randomUUID(), CENTER_LOCATION, DEFAULT_WEIGHT)
-
-        sut.startWorkingDay()
         sut.assign(order)
 
-        val expectedStepCount = 2
-        assertEquals(expectedStepCount, sut.getStepCount(order.deliverTo))
-    }
-
-    @Test
-    fun `should properly move up and backwards`() {
-        val sut = DEFAULT_COURIER
-        sut.currentLocation = CENTER_LOCATION
-        val order = Order(UUID.randomUUID(), NEARER_LOCATION, DEFAULT_WEIGHT)
         val destination = order.deliverTo
+        var stepCount = sut.getStepCount(destination)
 
-        sut.startWorkingDay()
-        sut.assign(order)
+        //When
+        while (stepCount-- > 0) {
+           sut.moveTo(destination)
+        }
 
-        val expectedStepCount = 2
-        assertEquals(expectedStepCount, sut.getStepCount(destination))
-
-        val expectedIntermediateLocation = Location(1, 5)
-        sut.moveTo(destination)
-
-        assertEquals(expectedIntermediateLocation, sut.currentLocation)
-
-        sut.moveTo(destination)
-
-        assertEquals(DEFAULT_LOCATION, sut.currentLocation)
+        //Then
         assertEquals(true, sut.hasReached(destination))
     }
 
     @Test
-    fun `should properly determine when destination has been reached`() {
-        val sut = DEFAULT_COURIER
-        sut.currentLocation = CENTER_LOCATION
+    fun `courier should move up and left direction when direction is up and left`() {
+        //Given
+        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
+        sut.currentLocation = Location(4, 5)
+        sut.startWorkingDay()
+
+        val order = Order(UUID.randomUUID(), NEARER_LOCATION, DEFAULT_WEIGHT)
+        sut.assign(order)
+
+        //When
+        sut.moveTo(order.deliverTo)
+
+        //Then
+        assertEquals(Location(1, 4), sut.currentLocation)
+    }
+
+    @Test
+    fun `courier should move down and forward direction when direction is down and forward`() {
+        //Given
+        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
+        sut.currentLocation = Location(7, 6)
         val order = Order(UUID.randomUUID(), FARTHER_LOCATION, DEFAULT_WEIGHT)
         val destination = order.deliverTo
 
         sut.startWorkingDay()
         sut.assign(order)
 
-        val expectedStepCount = 3
-        assertEquals(expectedStepCount, sut.getStepCount(destination))
-
-        val expectedFirstIntermediateLocation = Location(9, 5)
+        //When
         sut.moveTo(destination)
 
-        assertEquals(expectedFirstIntermediateLocation, sut.currentLocation)
+        //Then
+        assertEquals(Location(10, 7), sut.currentLocation)
 
-        val expectedSecondIntermediateLocation = Location(10, 8)
-        sut.moveTo(destination)
+    }
 
-        assertEquals(expectedSecondIntermediateLocation, sut.currentLocation)
+    @Test
+    fun `courier should determine when destination reached if speed higher than amount of steps`() {
+        //Given
+        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
+        sut.currentLocation = CENTER_LOCATION
+        sut.startWorkingDay()
 
-        sut.moveTo(destination)
+        val order = Order(UUID.randomUUID(), FARTHER_LOCATION, DEFAULT_WEIGHT)
+        sut.assign(order)
 
-        assertEquals(destination, sut.currentLocation)
-        assertEquals(true, sut.hasReached(destination))
+        val destination = order.deliverTo
+        var stepCount = sut.getStepCount(destination)
+
+        //When
+        while (stepCount-- > 0) {
+            sut.moveTo(destination)
+        }
+
+        assertAll(
+            "Ensure the courier reached correct destination",
+            { assertEquals(destination, sut.currentLocation) },
+            { assertEquals(true, sut.hasReached(destination)) }
+        )
     }
 
     companion object {
         private val DEFAULT_NAME = "Vasily"
         private val DEFAULT_TRANSPORT = Transport(CAR)
-        private val DEFAULT_COURIER = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
-        private val DEFAULT_LOCATION = Location(1,1)
+        private val DEFAULT_LOCATION = INITIAL_LOCATION
         private val CENTER_LOCATION = Location(5,5)
-        private val NEARER_LOCATION = DEFAULT_LOCATION
+        private val NEARER_LOCATION = INITIAL_LOCATION
         private val FARTHER_LOCATION = Location(10,10)
         private val DEFAULT_WEIGHT = Weight(1)
     }

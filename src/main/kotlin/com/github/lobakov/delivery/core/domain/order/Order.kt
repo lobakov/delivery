@@ -50,7 +50,7 @@ class Order(
         status = ASSIGNED
     }
 
-    fun close() {
+    fun complete() {
         status = COMPLETED
     }
 

@@ -3,6 +3,12 @@ package com.github.lobakov.delivery.core.domain.courier
 import com.github.lobakov.delivery.core.domain.courier.CourierStatus.*
 import com.github.lobakov.delivery.core.domain.order.Order
 import com.github.lobakov.delivery.core.domain.sharedkernel.Location
+import com.github.lobakov.delivery.core.domain.sharedkernel.Location.Companion.DOWN
+import com.github.lobakov.delivery.core.domain.sharedkernel.Location.Companion.INITIAL_LOCATION
+import com.github.lobakov.delivery.core.domain.sharedkernel.Location.Companion.LEFT
+import com.github.lobakov.delivery.core.domain.sharedkernel.Location.Companion.RIGHT
+import com.github.lobakov.delivery.core.domain.sharedkernel.Location.Companion.STEP
+import com.github.lobakov.delivery.core.domain.sharedkernel.Location.Companion.UP
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.sign
@@ -110,7 +116,7 @@ class Courier(
     }
 
     fun close(order: Order) {
-        order.close()
+        order.complete()
         status = READY
     }
 
@@ -126,12 +132,6 @@ class Courier(
     }
 
     companion object {
-        val INITIAL_LOCATION = Location(1, 1)
         const val WRONG_STATUS_MESSAGE_TEMPLATE = "Cannot change status to {} when status = {}, required status is {}"
-        const val LEFT = -1
-        const val RIGHT = 1
-        const val UP = -1
-        const val DOWN = 1
-        const val STEP = 1
     }
 }

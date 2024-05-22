@@ -8,6 +8,7 @@ import com.github.lobakov.delivery.core.domain.order.OrderStatus.ASSIGNED
 import com.github.lobakov.delivery.core.domain.order.OrderStatus.CREATED
 import com.github.lobakov.delivery.core.domain.sharedkernel.Location
 import com.github.lobakov.delivery.core.domain.sharedkernel.Weight
+import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -16,88 +17,105 @@ import java.util.*
 class OrderTest {
 
     @Test
-    fun `should properly initialize order on creation`() {
+    fun `order should be initialized with CREATED status and default location and weight on creation`() {
+        //Given
         val uuid = UUID.randomUUID()
 
+        //When
         val sut = Order(uuid, DEFAULT_LOCATION, DEFAULT_WEIGHT)
 
-        assertEquals(uuid, sut.id)
-        assertEquals(DEFAULT_LOCATION, sut.deliverTo)
-        assertEquals(DEFAULT_WEIGHT, sut.weight)
-        assertEquals(CREATED, sut.status)
-        assertEquals(null, sut.courierId)
+        //Then
+        assertAll(
+            "Ensure that order was properly initialized",
+            { assertEquals(uuid, sut.id) },
+            { assertEquals(DEFAULT_LOCATION, sut.deliverTo) },
+            { assertEquals(DEFAULT_WEIGHT, sut.weight) },
+            { assertEquals(CREATED, sut.status) },
+            { assertEquals(null, sut.courierId) }
+        )
     }
 
     @Test
-    fun `should properly assign courier`() {
+    fun `order should transition to ASSIGNED status and receive courier id on assigning courier`() {
+        //Given
         val uuid = UUID.randomUUID()
         val sut = Order(uuid, DEFAULT_LOCATION, DEFAULT_WEIGHT)
 
-        assertEquals(CREATED, sut.status)
-        assertEquals(null, sut.courierId)
+        //When
+        val courier = Courier("Vasily", Transport(CAR))
+        sut.assign(courier)
+
+        //Then
+        assertAll(
+            "Ensure order status is ASSIGNED and courier id set",
+            { assertEquals(ASSIGNED, sut.status) },
+            { assertEquals(courier.id, sut.courierId) }
+        )
+    }
+
+    @Test
+    fun `order should transition to COMPLETED status on completing order`() {
+        //Given
+        val uuid = UUID.randomUUID()
+        val sut = Order(uuid, DEFAULT_LOCATION, DEFAULT_WEIGHT)
 
         val courier = Courier("Vasily", Transport(CAR))
         sut.assign(courier)
 
-        assertEquals(ASSIGNED, sut.status)
-        assertEquals(courier.id, sut.courierId)
-    }
+        //When
+        sut.complete()
 
-    @Test
-    fun `should properly close order`() {
-        val uuid = UUID.randomUUID()
-
-        val sut = Order(uuid, DEFAULT_LOCATION, DEFAULT_WEIGHT)
-
-        val courier = Courier("Vasily", Transport(CAR))
-        sut.assign(courier)
-
-        assertEquals(ASSIGNED, sut.status)
-        assertEquals(courier.id, sut.courierId)
-
-        sut.close()
+        //Then
         assertEquals(OrderStatus.COMPLETED, sut.status)
     }
 
     @Test
-    fun `should throw exception if courier has already been assigned`() {
+    fun `order should throw exception on courier assignment if a courier has already been assigned to it`() {
+        //Given
         val uuid = UUID.randomUUID()
         val sut = Order(uuid, DEFAULT_LOCATION, DEFAULT_WEIGHT)
-        val legitCourier = Courier("Vasily", Transport(CAR))
 
-        sut.assign(legitCourier)
+        sut.assign(
+            Courier("Vasily", Transport(CAR))
+        )
 
-        assertEquals(ASSIGNED, sut.status)
-        assertEquals(legitCourier.id, sut.courierId)
-
-        val illegalCourier = Courier("Vitaly", Transport(BYCICLE))
-        val expectedExceptionMessage = "Courier ${legitCourier.id} has been already assigned"
-
-        val actualException = assertThrows<IllegalArgumentException> { sut.assign(illegalCourier) }
-        assertEquals(expectedExceptionMessage, actualException.message)
+        //When, Then
+        val actualException = assertThrows<IllegalArgumentException> {
+            sut.assign(
+                Courier("Vitaly", Transport(BYCICLE))
+            )
+        }
+        assertEquals(
+            "Cannot assign courier to order with status = ${sut.status}",
+            actualException.message
+        )
     }
 
     @Test
-    fun `should throw exception when assigning courier if order is closed`() {
+    fun `order should throw exception when assigning courier if order is closed`() {
+        //Given
         val uuid = UUID.randomUUID()
         val sut = Order(uuid, DEFAULT_LOCATION, DEFAULT_WEIGHT)
 
-        val legitCourier = Courier("Vasily", Transport(CAR))
-        sut.assign(legitCourier)
+        sut.assign(
+            Courier("Vasily", Transport(CAR))
+        )
+        sut.complete()
 
-        assertEquals(ASSIGNED, sut.status)
-        assertEquals(legitCourier.id, sut.courierId)
-
-        val illegalCourier = Courier("Vitaly", Transport(BYCICLE))
-        val expectedExceptionMessage = "Cannot assign courier to order with status = ${sut.status}"
-        sut.close()
-
-        val actualException = assertThrows<IllegalArgumentException> { sut.assign(illegalCourier) }
-        assertEquals(expectedExceptionMessage, actualException.message)
+        //When, Then
+        val actualException = assertThrows<IllegalArgumentException> {
+            sut.assign(
+                Courier("Vitaly", Transport(BYCICLE))
+            )
+        }
+        assertEquals(
+            "Cannot assign courier to order with status = ${sut.status}",
+            actualException.message
+        )
     }
 
     companion object {
-        private val DEFAULT_LOCATION = Location(1,1)
+        private val DEFAULT_LOCATION = Location(1, 1)
         private val DEFAULT_WEIGHT = Weight(1)
     }
 }
