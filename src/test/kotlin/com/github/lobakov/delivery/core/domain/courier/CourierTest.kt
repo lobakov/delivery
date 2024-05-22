@@ -126,7 +126,7 @@ class CourierTest {
         sut.assign(order)
 
         //When
-        val actualStepCount = sut.getStepCount(order.deliverTo)
+        val actualStepCount = sut.countStepsTo(order.deliverTo)
 
         //Then
         assertEquals(2, actualStepCount)
@@ -142,7 +142,7 @@ class CourierTest {
         sut.assign(order)
 
         val destination = order.deliverTo
-        var stepCount = sut.getStepCount(destination)
+        var stepCount = sut.countStepsTo(destination)
 
         //When
         while (stepCount-- > 0) {
@@ -200,7 +200,7 @@ class CourierTest {
         sut.assign(order)
 
         val destination = order.deliverTo
-        var stepCount = sut.getStepCount(destination)
+        var stepCount = sut.countStepsTo(destination)
 
         //When
         while (stepCount-- > 0) {

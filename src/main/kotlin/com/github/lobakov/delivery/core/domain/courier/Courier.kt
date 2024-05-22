@@ -3,15 +3,8 @@ package com.github.lobakov.delivery.core.domain.courier
 import com.github.lobakov.delivery.core.domain.courier.CourierStatus.*
 import com.github.lobakov.delivery.core.domain.order.Order
 import com.github.lobakov.delivery.core.domain.sharedkernel.Location
-import com.github.lobakov.delivery.core.domain.sharedkernel.Location.Companion.DOWN
 import com.github.lobakov.delivery.core.domain.sharedkernel.Location.Companion.INITIAL_LOCATION
-import com.github.lobakov.delivery.core.domain.sharedkernel.Location.Companion.LEFT
-import com.github.lobakov.delivery.core.domain.sharedkernel.Location.Companion.RIGHT
-import com.github.lobakov.delivery.core.domain.sharedkernel.Location.Companion.STEP
-import com.github.lobakov.delivery.core.domain.sharedkernel.Location.Companion.UP
 import java.util.*
-import kotlin.math.abs
-import kotlin.math.sign
 
 class Courier(
     val name: String,
@@ -66,42 +59,10 @@ class Courier(
     }
 
     fun moveTo(destination: Location) {
-        var speed = transport.speed
-
-        val deltaX = destination.x - currentLocation.x
-        var numberOfStepsX = abs(deltaX)
-        val directionX = deltaX.sign
-
-        while (numberOfStepsX > 0 && speed > 0) {
-            val newX = when (directionX) {
-                LEFT -> currentLocation.x - STEP
-                RIGHT -> currentLocation.x + STEP
-                else -> break
-            }
-
-            currentLocation = Location(newX, currentLocation.y)
-            numberOfStepsX -= STEP
-            speed -= STEP
-        }
-
-        val deltaY = destination.y - currentLocation.y
-        var numberOfStepsY = abs(deltaY)
-        val directionY: Int = deltaY.sign
-
-        while (numberOfStepsY > 0 && speed > 0) {
-            val newY = when (directionY) {
-                UP -> currentLocation.y - STEP
-                DOWN -> currentLocation.y + STEP
-                else -> break
-            }
-
-            currentLocation = Location(currentLocation.x, newY)
-            numberOfStepsY -= STEP
-            speed -= STEP
-        }
+        currentLocation = currentLocation.moveTo(destination, transport.speed)
     }
 
-    fun getStepCount(destination: Location): Int {
+    fun countStepsTo(destination: Location): Int {
         val distance = currentLocation.distanceTo(destination)
         val speed = transport.speed
 
