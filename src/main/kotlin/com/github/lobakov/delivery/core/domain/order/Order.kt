@@ -1,6 +1,5 @@
 package com.github.lobakov.delivery.core.domain.order
 
-import com.github.lobakov.delivery.core.domain.courier.Courier
 import com.github.lobakov.delivery.core.domain.order.OrderStatus.*
 import com.github.lobakov.delivery.core.domain.sharedkernel.Location
 import com.github.lobakov.delivery.core.domain.sharedkernel.Weight
@@ -45,8 +44,8 @@ class Order(
             field = newCourierId
         }
 
-    fun assign(courier: Courier) {
-        courierId = courier.id
+    fun assign(id: UUID) {
+        courierId = id
         status = ASSIGNED
     }
 
