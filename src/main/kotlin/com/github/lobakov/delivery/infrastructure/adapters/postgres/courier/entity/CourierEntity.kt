@@ -8,18 +8,24 @@ import java.util.*
 
 @Entity
 @Table(schema = "delivery", name = "t_courier")
-class CourierEntity() {
+class CourierEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    lateinit var id: UUID
+    var id: UUID? = null
+
+    @Version
+    var version: Long? = null
+
+    @Column(name = "name")
+    var name: String? = null
 
     @Column(name = "status")
-    lateinit var status: CourierStatus
+    var status: CourierStatus? = null
 
     @Column(name = "current_location")
-    lateinit var currentLocation: Location
+    var currentLocation: Location? = null
 
     @Column(name = "transport")
-    lateinit var transport: Transport
+    var transport: Transport? = null
 }

@@ -11,6 +11,8 @@ class Order(
     val weight: Weight
 ) {
 
+    var version: Long = 1L
+
     var status: OrderStatus = CREATED
         private set(newStatus) {
             when (newStatus) {

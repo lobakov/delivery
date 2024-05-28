@@ -12,16 +12,19 @@ class OrderEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    lateinit var id: UUID
+    var id: UUID? = null
+
+    @Version
+    var version: Long? = null
 
     @Column(name = "status")
-    lateinit var status: OrderStatus
+    var status: OrderStatus? = null
 
     @Column(name = "deliver_to")
-    lateinit var deliverTo: Location
+    var deliverTo: Location? = null
 
     @Column(name = "weight")
-    lateinit var weight: Weight
+    var weight: Weight? = null
 
     @Column(name = "courier_id")
     var courierId: UUID? = null

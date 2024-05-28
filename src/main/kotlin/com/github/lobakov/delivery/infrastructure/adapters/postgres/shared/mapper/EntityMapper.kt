@@ -1,6 +1,6 @@
 package com.github.lobakov.delivery.infrastructure.adapters.postgres.shared.mapper
 
-interface Mapper<A, E> {
+interface EntityMapper<A, E> {
 
     fun toAggregate(entity: E): A
 

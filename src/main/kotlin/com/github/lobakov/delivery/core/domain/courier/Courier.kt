@@ -11,6 +11,8 @@ class Courier(
     val transport: Transport,
 ) {
 
+    var version: Long = 1L
+
     val id: UUID = UUID.randomUUID()
     var currentLocation = INITIAL_LOCATION
 
