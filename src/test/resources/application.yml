@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:test-db;MODE=PostgreSQL;
+    username:
+    password:
+    driverClassName: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
+      hibernate: DEBUG

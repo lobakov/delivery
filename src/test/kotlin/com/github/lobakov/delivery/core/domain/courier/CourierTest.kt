@@ -1,7 +1,7 @@
 package com.github.lobakov.delivery.core.domain.courier
 
 import com.github.lobakov.delivery.core.domain.courier.CourierStatus.*
-import com.github.lobakov.delivery.core.domain.courier.TransportType.CAR
+import com.github.lobakov.delivery.core.domain.courier.Transport.CAR
 import com.github.lobakov.delivery.core.domain.order.Order
 import com.github.lobakov.delivery.core.domain.sharedkernel.Location
 import com.github.lobakov.delivery.core.domain.sharedkernel.Location.Companion.INITIAL_LOCATION
@@ -18,6 +18,8 @@ class CourierTest {
     fun `courier should be initialized with default location and NOT AVAILABLE status on creation`() {
         //Given, When
         val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
+
+        UUID.randomUUID()
 
         //Then
         assertAll(
@@ -216,7 +218,7 @@ class CourierTest {
 
     companion object {
         private val DEFAULT_NAME = "Vasily"
-        private val DEFAULT_TRANSPORT = Transport(CAR)
+        private val DEFAULT_TRANSPORT = CAR
         private val DEFAULT_LOCATION = INITIAL_LOCATION
         private val CENTER_LOCATION = Location(5,5)
         private val NEARER_LOCATION = INITIAL_LOCATION

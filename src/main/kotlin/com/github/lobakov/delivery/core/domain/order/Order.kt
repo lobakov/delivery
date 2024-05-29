@@ -5,7 +5,7 @@ import com.github.lobakov.delivery.core.domain.sharedkernel.Location
 import com.github.lobakov.delivery.core.domain.sharedkernel.Weight
 import java.util.UUID
 
-class Order(
+data class Order(
     val id: UUID,
     val deliverTo: Location,
     val weight: Weight
@@ -46,8 +46,8 @@ class Order(
             field = newCourierId
         }
 
-    fun assign(id: UUID) {
-        courierId = id
+    fun assign(courierId: UUID) {
+        this.courierId = courierId
         status = ASSIGNED
     }
 

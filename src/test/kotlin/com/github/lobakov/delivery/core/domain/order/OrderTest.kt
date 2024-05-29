@@ -1,9 +1,8 @@
 package com.github.lobakov.delivery.core.domain.order
 
 import com.github.lobakov.delivery.core.domain.courier.Courier
-import com.github.lobakov.delivery.core.domain.courier.Transport
-import com.github.lobakov.delivery.core.domain.courier.TransportType.BYCICLE
-import com.github.lobakov.delivery.core.domain.courier.TransportType.CAR
+import com.github.lobakov.delivery.core.domain.courier.Transport.BYCICLE
+import com.github.lobakov.delivery.core.domain.courier.Transport.CAR
 import com.github.lobakov.delivery.core.domain.order.OrderStatus.ASSIGNED
 import com.github.lobakov.delivery.core.domain.order.OrderStatus.CREATED
 import com.github.lobakov.delivery.core.domain.sharedkernel.Location
@@ -42,8 +41,8 @@ class OrderTest {
         val sut = Order(uuid, DEFAULT_LOCATION, DEFAULT_WEIGHT)
 
         //When
-        val courier = Courier("Vasily", Transport(CAR))
-        sut.assign(courier)
+        val courier = Courier("Vasily", CAR)
+        sut.assign(courier.id!!)
 
         //Then
         assertAll(
@@ -59,8 +58,8 @@ class OrderTest {
         val uuid = UUID.randomUUID()
         val sut = Order(uuid, DEFAULT_LOCATION, DEFAULT_WEIGHT)
 
-        val courier = Courier("Vasily", Transport(CAR))
-        sut.assign(courier)
+        val courier = Courier("Vasily", CAR)
+        sut.assign(courier.id!!)
 
         //When
         sut.complete()
@@ -76,13 +75,13 @@ class OrderTest {
         val sut = Order(uuid, DEFAULT_LOCATION, DEFAULT_WEIGHT)
 
         sut.assign(
-            Courier("Vasily", Transport(CAR))
+            Courier("Vasily", CAR).id!!
         )
 
         //When, Then
         val actualException = assertThrows<IllegalArgumentException> {
             sut.assign(
-                Courier("Vitaly", Transport(BYCICLE))
+                Courier("Vitaly", BYCICLE).id!!
             )
         }
         assertEquals(
@@ -98,14 +97,14 @@ class OrderTest {
         val sut = Order(uuid, DEFAULT_LOCATION, DEFAULT_WEIGHT)
 
         sut.assign(
-            Courier("Vasily", Transport(CAR))
+            Courier("Vasily", CAR).id!!
         )
         sut.complete()
 
         //When, Then
         val actualException = assertThrows<IllegalArgumentException> {
             sut.assign(
-                Courier("Vitaly", Transport(BYCICLE))
+                Courier("Vitaly", BYCICLE).id!!
             )
         }
         assertEquals(

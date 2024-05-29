@@ -3,6 +3,9 @@ package com.github.lobakov.delivery.infrastructure.adapters.postgres.courier.ent
 import com.github.lobakov.delivery.core.domain.courier.CourierStatus
 import com.github.lobakov.delivery.core.domain.courier.Transport
 import com.github.lobakov.delivery.core.domain.sharedkernel.Location
+import com.github.lobakov.delivery.infrastructure.adapters.postgres.courier.converter.CourierStatusConverter
+import com.github.lobakov.delivery.infrastructure.adapters.postgres.shared.converter.LocationConverter
+import com.github.lobakov.delivery.infrastructure.adapters.postgres.shared.converter.TransportConverter
 import jakarta.persistence.*
 import java.util.*
 
@@ -11,7 +14,6 @@ import java.util.*
 class CourierEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null
 
     @Version
@@ -21,11 +23,14 @@ class CourierEntity {
     var name: String? = null
 
     @Column(name = "status")
+    @Convert(converter = CourierStatusConverter::class)
     var status: CourierStatus? = null
 
     @Column(name = "current_location")
+    @Convert(converter = LocationConverter::class)
     var currentLocation: Location? = null
 
     @Column(name = "transport")
+    @Convert(converter = TransportConverter::class)
     var transport: Transport? = null
 }

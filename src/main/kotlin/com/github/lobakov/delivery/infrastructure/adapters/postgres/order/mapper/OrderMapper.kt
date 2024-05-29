@@ -5,10 +5,10 @@ import com.github.lobakov.delivery.core.domain.order.OrderStatus.COMPLETED
 import com.github.lobakov.delivery.infrastructure.adapters.postgres.order.entity.OrderEntity
 import com.github.lobakov.delivery.infrastructure.adapters.postgres.shared.mapper.EntityMapper
 import org.mapstruct.Mapper
-import org.mapstruct.NullValuePropertyMappingStrategy
+import org.mapstruct.MappingConstants.ComponentModel.SPRING
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-interface OrderMapper : EntityMapper<Order, OrderEntity> {
+@Mapper(componentModel = SPRING)
+class OrderMapper : EntityMapper<Order, OrderEntity> {
 
     override fun toAggregate(entity: OrderEntity): Order {
         val order = Order(
@@ -37,6 +37,13 @@ interface OrderMapper : EntityMapper<Order, OrderEntity> {
         entity.version = aggregate.version
         entity.deliverTo = aggregate.deliverTo
         entity.weight = aggregate.weight
+        entity.status = aggregate.status
+        entity.courierId = aggregate.courierId
+
+        return entity
+    }
+
+    override fun updateEntity(aggregate: Order, entity: OrderEntity): OrderEntity {
         entity.status = aggregate.status
         entity.courierId = aggregate.courierId
 
