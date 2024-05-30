@@ -30,6 +30,7 @@ class OrderRepositoryImpl(
         repository.saveAndFlush(entity)
     }
 
+    @Transactional
     override fun findById(id: UUID): Order {
         return repository.findById(id)
             .map { mapper.toAggregate(it) }
