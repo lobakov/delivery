@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD
+import org.springframework.test.context.jdbc.Sql
 import java.util.*
 
 @SpringBootTest
@@ -40,13 +41,17 @@ class CourierRepositoryTest {
     }
 
     @Test
+    @Sql(
+        statements = [
+            "INSERT INTO delivery.t_courier(id, version, name, status, current_location, transport) " +
+                    "VALUES('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2', 1, 'Ignat', 'READY', '10, 10', 3);"
+        ]
+    )
     fun shouldUpdateCourierEntityWhenUpdated() {
         //Given
-        val sut = Courier("TestCourier", BYCICLE)
+        val sut = repository.findById(UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2"))
 
-        repository.add(sut)
-
-        sut.startWorkingDay()
+        //When
         sut.assign(
             Order(
                 id = UUID.randomUUID(),
@@ -54,8 +59,6 @@ class CourierRepositoryTest {
                 weight = Weight(1)
             )
         )
-
-        //When
         repository.update(sut)
         val actual = repository.findById(sut.id!!)
 
@@ -71,50 +74,46 @@ class CourierRepositoryTest {
     }
 
     @Test
+    @Sql(
+        statements = [
+            "INSERT INTO delivery.t_courier(id, version, name, status, current_location, transport) " +
+                    "VALUES('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1', 1, 'Ignat', 'READY', '1, 1', 3);"
+        ]
+    )
     fun shouldReturnAllCouriersInReadyStatusWhenGetAllReadyInvoked() {
-        //Given
-        val courier1 = Courier("TestCourier1", BYCICLE)
-
-        val courier2 = Courier("TestCourier2", CAR)
-
-        courier1.startWorkingDay()
-
-        repository.add(courier1)
-        repository.add(courier2)
-
         //When
         val actual: List<Courier> = repository.getAllReady()
 
         //Then
-        val expected = listOf(courier1)
+        val expected = listOf(
+            Courier(
+                "Ignat",
+                BYCICLE,
+                UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1")
+            )
+        )
         assertEquals(expected, actual)
     }
 
     @Test
+    @Sql(
+        statements = [
+            "INSERT INTO delivery.t_courier(id, version, name, status, current_location, transport) " +
+                    "VALUES('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa0', 1, 'Ignat', 'BUSY', '1, 1', 3);"
+        ]
+    )
     fun shouldReturnAllCouriersInBusyStatusWhenGetAllBusyInvoked() {
-        //Given
-        val courier1 = Courier("TestCourier1", BYCICLE)
-
-        val courier2 = Courier("TestCourier2", CAR)
-
-        courier1.startWorkingDay()
-        courier2.startWorkingDay()
-        courier2.assign(
-            Order(
-                id = UUID.randomUUID(),
-                deliverTo = Location(10, 10),
-                weight = Weight(1)
-            )
-        )
-
-        repository.add(courier1)
-        repository.add(courier2)
-
         //When
         val actual: List<Courier> = repository.getAllBusy()
 
         //Then
-        val expected = listOf(courier2)
+        val expected = listOf(
+            Courier(
+                "Ignat",
+                BYCICLE,
+                UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa0")
+            )
+        )
         assertEquals(expected, actual)
     }
 }

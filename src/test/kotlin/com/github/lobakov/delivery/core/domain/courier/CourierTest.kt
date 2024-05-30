@@ -17,7 +17,7 @@ class CourierTest {
     @Test
     fun `courier should be initialized with default location and NOT AVAILABLE status on creation`() {
         //Given, When
-        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
+        val sut = Courier(DEFAULT_NAME, CAR)
 
         UUID.randomUUID()
 
@@ -25,7 +25,7 @@ class CourierTest {
         assertAll(
             "Ensure courier was initialized properly",
             { assertEquals(DEFAULT_NAME, sut.name) },
-            { assertEquals(DEFAULT_TRANSPORT, sut.transport) },
+            { assertEquals(CAR, sut.transport) },
             { assertEquals(NOT_AVAILABLE, sut.status) },
             { assertEquals(DEFAULT_LOCATION, sut.currentLocation) },
         )
@@ -34,7 +34,7 @@ class CourierTest {
     @Test
     fun `courier should transition to READY status when starting working day`() {
         //Given
-        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
+        val sut = Courier(DEFAULT_NAME, CAR)
 
         //When
         sut.startWorkingDay()
@@ -46,7 +46,7 @@ class CourierTest {
     @Test
     fun `courier should throw exception on starting working day when working day has already started`() {
         //Given
-        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
+        val sut = Courier(DEFAULT_NAME, CAR)
         sut.startWorkingDay()
 
         //When, Then
@@ -59,7 +59,7 @@ class CourierTest {
     @Test
     fun `courier should throw exception on finishing working day when working day has not started`() {
         //Given
-        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
+        val sut = Courier(DEFAULT_NAME, CAR)
 
         //When, Then
         val actualException = assertThrows<IllegalArgumentException> {
@@ -74,7 +74,7 @@ class CourierTest {
     @Test
     fun `courier should transition to BUSY status when order assigned`() {
         //Given
-        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
+        val sut = Courier(DEFAULT_NAME, CAR)
         val order = Order(UUID.randomUUID(), DEFAULT_LOCATION, DEFAULT_WEIGHT)
 
         //When
@@ -88,7 +88,7 @@ class CourierTest {
     @Test
     fun `courier should transition to READY status when order is delivered`() {
         //Given
-        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
+        val sut = Courier(DEFAULT_NAME, CAR)
         val order = Order(UUID.randomUUID(), DEFAULT_LOCATION, DEFAULT_WEIGHT)
         sut.startWorkingDay()
         sut.assign(order)
@@ -103,7 +103,7 @@ class CourierTest {
     @Test
     fun `courier should throw exception on finishing working day when delivering goods`() {
         //Given
-        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
+        val sut = Courier(DEFAULT_NAME, CAR)
         sut.startWorkingDay()
 
         val order = Order(UUID.randomUUID(), DEFAULT_LOCATION, DEFAULT_WEIGHT)
@@ -122,7 +122,7 @@ class CourierTest {
     @Test
     fun `courier should properly determine step count`() {
         //Given
-        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
+        val sut = Courier(DEFAULT_NAME, CAR)
         val order = Order(UUID.randomUUID(), CENTER_LOCATION, DEFAULT_WEIGHT)
         sut.startWorkingDay()
         sut.assign(order)
@@ -137,7 +137,7 @@ class CourierTest {
     @Test
     fun `courier should properly determine when destination has been reached`() {
         //Given
-        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
+        val sut = Courier(DEFAULT_NAME, CAR)
         sut.startWorkingDay()
 
         val order = Order(UUID.randomUUID(), CENTER_LOCATION, DEFAULT_WEIGHT)
@@ -158,7 +158,7 @@ class CourierTest {
     @Test
     fun `courier should move up and left direction when direction is up and left`() {
         //Given
-        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
+        val sut = Courier(DEFAULT_NAME, CAR)
         sut.currentLocation = Location(4, 5)
         sut.startWorkingDay()
 
@@ -175,7 +175,7 @@ class CourierTest {
     @Test
     fun `courier should move down and forward direction when direction is down and forward`() {
         //Given
-        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
+        val sut = Courier(DEFAULT_NAME, CAR)
         sut.currentLocation = Location(7, 6)
         val order = Order(UUID.randomUUID(), FARTHER_LOCATION, DEFAULT_WEIGHT)
         val destination = order.deliverTo
@@ -194,7 +194,7 @@ class CourierTest {
     @Test
     fun `courier should determine when destination reached if speed higher than amount of steps`() {
         //Given
-        val sut = Courier(DEFAULT_NAME, DEFAULT_TRANSPORT)
+        val sut = Courier(DEFAULT_NAME, CAR)
         sut.currentLocation = CENTER_LOCATION
         sut.startWorkingDay()
 
@@ -218,7 +218,6 @@ class CourierTest {
 
     companion object {
         private val DEFAULT_NAME = "Vasily"
-        private val DEFAULT_TRANSPORT = CAR
         private val DEFAULT_LOCATION = INITIAL_LOCATION
         private val CENTER_LOCATION = Location(5,5)
         private val NEARER_LOCATION = INITIAL_LOCATION
