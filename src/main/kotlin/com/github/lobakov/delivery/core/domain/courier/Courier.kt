@@ -9,9 +9,11 @@ import java.util.*
 class Courier(
     val name: String,
     val transport: Transport,
+    val id: UUID? = UUID.randomUUID()
 ) {
 
-    val id: UUID = UUID.randomUUID()
+    var version: Long = 1L
+
     var currentLocation = INITIAL_LOCATION
 
     var status: CourierStatus = NOT_AVAILABLE
@@ -54,7 +56,7 @@ class Courier(
         require(status == READY) {
             "Cannot assign the order ${order.id} to courier, the courier is in $status status"
         }
-        order.assign(this)
+        order.assign(this.id!!)
         status = BUSY
     }
 
