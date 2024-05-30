@@ -6,7 +6,7 @@ import com.github.lobakov.delivery.core.domain.sharedkernel.Location
 import com.github.lobakov.delivery.core.domain.sharedkernel.Location.Companion.INITIAL_LOCATION
 import java.util.*
 
-data class Courier(
+class Courier(
     val name: String,
     val transport: Transport,
     val id: UUID? = UUID.randomUUID()

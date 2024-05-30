@@ -23,6 +23,7 @@ class CourierRepositoryImpl(
         return mapper.toAggregate(savedEntity)
     }
 
+    @Transactional
     override fun update(courier: Courier) {
         val reference = repository.getReferenceById(courier.id!!)
         val entity = mapper.updateEntity(courier, reference)

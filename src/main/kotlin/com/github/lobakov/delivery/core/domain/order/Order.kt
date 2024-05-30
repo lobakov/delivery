@@ -5,7 +5,7 @@ import com.github.lobakov.delivery.core.domain.sharedkernel.Location
 import com.github.lobakov.delivery.core.domain.sharedkernel.Weight
 import java.util.UUID
 
-data class Order(
+class Order(
     val id: UUID,
     val deliverTo: Location,
     val weight: Weight
