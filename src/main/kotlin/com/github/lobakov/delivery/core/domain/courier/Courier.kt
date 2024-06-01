@@ -4,7 +4,7 @@ import com.github.lobakov.delivery.core.domain.courier.CourierStatus.*
 import com.github.lobakov.delivery.core.domain.order.Order
 import com.github.lobakov.delivery.core.domain.sharedkernel.Location
 import com.github.lobakov.delivery.core.domain.sharedkernel.Location.Companion.INITIAL_LOCATION
-import java.util.*
+import java.util.UUID
 
 class Courier(
     val name: String,

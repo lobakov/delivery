@@ -10,7 +10,8 @@ class DispatchServiceImpl : DispatchService {
 
     override fun dispatch(order: Order, couriers: List<Courier>): Courier? {
         return couriers
-            .filter { it.status == READY && it.transport.canCarry(order.weight) }
+            .filter { it.status == READY }
+            .filter { it.transport.canCarry(order.weight) }
             .minByOrNull { it.countStepsTo(order.deliverTo) }
     }
 }

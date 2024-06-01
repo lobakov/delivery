@@ -1,57 +1,69 @@
 package com.github.lobakov.delivery.core.domainservices
 
+import com.github.lobakov.delivery.core.domain.courier.Courier
+import com.github.lobakov.delivery.core.domain.courier.Transport.*
 import com.github.lobakov.delivery.core.domain.order.Order
 import com.github.lobakov.delivery.core.domain.sharedkernel.Location
 import com.github.lobakov.delivery.core.domain.sharedkernel.Weight
-import com.github.lobakov.delivery.core.ports.courier.CourierRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.jdbc.Sql
-import java.util.*
+import java.util.UUID
 
 @SpringBootTest
 class DispatcherServiceTest {
 
     @Autowired
-    private lateinit var repository: CourierRepository
-
-    @Autowired
     private lateinit var dispatchService: DispatchService
 
-    @Test
-    @Sql(
-        statements = [
-            "INSERT INTO delivery.t_courier(id, version, name, status, current_location, transport) " +
-                    "VALUES('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1', 1, 'Petya', 'READY', '5, 5', 1), " +
-                    "('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2', 1, 'Vanya', 'READY', '1, 1', 4), " +
-                    "('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3', 1, 'Sasha', 'BUSY',  '9, 9', 3), " +
-                    "('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4', 1, 'Igor', 'READY',  '9, 9', 1), " +
-                    "('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa5', 1, 'Kolya', 'READY', '8, 8', 3);"
-        ]
+    private lateinit var readyCouriers: List<Courier>
+
+    final val sasha = Courier(
+        "Sasha",
+        CAR,
+        UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1")
     )
+
+    final val igor = Courier(
+        "Igor",
+        PEDESTRIAN,
+        UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2")
+    )
+
+    final val samBridges = Courier(
+        "Sam Bridges",
+        SCOOTER,
+        UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3")
+    )
+
+    init {
+        sasha.currentLocation = Location(1, 1)
+        igor.currentLocation = Location(9, 9)
+        samBridges.currentLocation = Location(7, 7)
+
+        readyCouriers = listOf(sasha, igor, samBridges)
+
+        readyCouriers.forEach { it.startWorkingDay() }
+    }
+
+
+    @Test
     fun `should dispatch closest courier capable of transporting weight`() {
         //Given
         val order = Order(UUID.randomUUID(), Location(10, 10), Weight(5))
-        val readyCouriers = repository.getAllReady()
 
         //When
         val actualCourier = dispatchService.dispatch(order, readyCouriers)
 
-        //Then
-        val expectedId = UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa5")
-        val expectedCourier = readyCouriers.find { it.id == expectedId }
-
         assertAll(
             "Ensure proper courier was assigned",
-            { assertEquals(expectedCourier?.id, actualCourier?.id) },
-            { assertEquals(expectedCourier?.name, actualCourier?.name) },
-            { assertEquals(expectedCourier?.status, actualCourier?.status) },
-            { assertEquals(expectedCourier?.currentLocation, actualCourier?.currentLocation) },
-            { assertEquals(expectedCourier?.transport, actualCourier?.transport) }
+            { assertEquals(samBridges.id, actualCourier?.id) },
+            { assertEquals(samBridges.name, actualCourier?.name) },
+            { assertEquals(samBridges.status, actualCourier?.status) },
+            { assertEquals(samBridges.currentLocation, actualCourier?.currentLocation) },
+            { assertEquals(samBridges.transport, actualCourier?.transport) }
         )
     }
-
 }
