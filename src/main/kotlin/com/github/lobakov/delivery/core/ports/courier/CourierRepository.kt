@@ -13,5 +13,5 @@ interface CourierRepository {
 
     fun getAllBusy(): List<Courier>
 
-    fun findById(id: UUID): Courier
+    fun findById(id: UUID): Courier?
 }

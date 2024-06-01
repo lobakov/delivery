@@ -31,7 +31,7 @@ class OrderRepositoryImpl(
     }
 
     @Transactional
-    override fun findById(id: UUID): Order {
+    override fun findById(id: UUID): Order? {
         return repository.findById(id)
             .map { mapper.toAggregate(it) }
             .orElse(null)

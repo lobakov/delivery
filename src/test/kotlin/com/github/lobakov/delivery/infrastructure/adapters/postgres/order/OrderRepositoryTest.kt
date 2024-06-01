@@ -64,11 +64,11 @@ class OrderRepositoryTest {
         //Then
         assertAll(
             "Ensure actual updated properties equal to aggregate",
-            { assertEquals(sut.id, actual.id) },
-            { assertEquals(sut.courierId, actual.courierId) },
-            { assertEquals(sut.deliverTo, actual.deliverTo) },
-            { assertEquals(sut.status, actual.status) },
-            { assertEquals(sut.weight, actual.weight) }
+            { assertEquals(sut.id, actual?.id) },
+            { assertEquals(sut.courierId, actual?.courierId) },
+            { assertEquals(sut.deliverTo, actual?.deliverTo) },
+            { assertEquals(sut.status, actual?.status) },
+            { assertEquals(sut.weight, actual?.weight) }
         )
     }
 
