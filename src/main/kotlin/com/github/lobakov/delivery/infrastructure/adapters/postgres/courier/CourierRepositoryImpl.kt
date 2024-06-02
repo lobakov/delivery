@@ -38,7 +38,7 @@ class CourierRepositoryImpl(
         return getAllByStatus(BUSY)
     }
 
-    override fun findById(id: UUID): Courier {
+    override fun findById(id: UUID): Courier? {
         return repository.findById(id)
             .map { mapper.toAggregate(it) }
             .orElse(null)

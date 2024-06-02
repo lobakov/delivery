@@ -2,7 +2,6 @@ package com.github.lobakov.delivery.infrastructure.adapters.postgres.courier
 
 import com.github.lobakov.delivery.core.domain.courier.Courier
 import com.github.lobakov.delivery.core.domain.courier.Transport.BYCICLE
-import com.github.lobakov.delivery.core.domain.courier.Transport.CAR
 import com.github.lobakov.delivery.core.domain.order.Order
 import com.github.lobakov.delivery.core.domain.sharedkernel.Location
 import com.github.lobakov.delivery.core.domain.sharedkernel.Weight
@@ -52,24 +51,24 @@ class CourierRepositoryTest {
         val sut = repository.findById(UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2"))
 
         //When
-        sut.assign(
+        sut?.assign(
             Order(
                 id = UUID.randomUUID(),
                 deliverTo = Location(10, 10),
                 weight = Weight(1)
             )
         )
-        repository.update(sut)
+        repository.update(sut!!)
         val actual = repository.findById(sut.id!!)
 
         //Then
         assertAll(
             "Ensure actual updated properties equal to aggregate",
-            { assertEquals(sut.id, actual.id) },
-            { assertEquals(sut.name, actual.name) },
-            { assertEquals(sut.transport, actual.transport) },
-            { assertEquals(sut.status, actual.status) },
-            { assertEquals(sut.currentLocation, actual.currentLocation) }
+            { assertEquals(sut.id, actual?.id) },
+            { assertEquals(sut.name, actual?.name) },
+            { assertEquals(sut.transport, actual?.transport) },
+            { assertEquals(sut.status, actual?.status) },
+            { assertEquals(sut.currentLocation, actual?.currentLocation) }
         )
     }
 

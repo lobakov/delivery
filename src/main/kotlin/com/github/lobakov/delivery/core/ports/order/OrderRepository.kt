@@ -13,5 +13,5 @@ interface OrderRepository {
 
     fun getAllAssigned(): List<Order>
 
-    fun findById(id: UUID): Order
+    fun findById(id: UUID): Order?
 }
