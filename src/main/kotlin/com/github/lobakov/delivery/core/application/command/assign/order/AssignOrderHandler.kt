@@ -1,6 +1,8 @@
 package com.github.lobakov.delivery.core.application.command.assign.order
 
+
 import com.github.lobakov.delivery.core.application.shared.CommandHandler
+import com.github.lobakov.delivery.core.domain.order.Order
 import com.github.lobakov.delivery.core.domainservices.DispatchService
 import com.github.lobakov.delivery.core.ports.courier.CourierRepository
 import com.github.lobakov.delivery.core.ports.order.OrderRepository
@@ -14,17 +16,29 @@ class AssignOrderHandler(
 ) : CommandHandler<AssignOrderCommand> {
 
     override fun handle(command: AssignOrderCommand) {
-        orderRepository.getAllNotAssigned()
-            .forEach {
-                val readyCouriers = courierRepository.getAllReady()
+        val orderId = command.orderId
 
-                val courier = dispatcher.dispatch(it, readyCouriers)
-                    ?: return@forEach //if no courier found for this order - continue
+        if (orderId == null) {
+            orderRepository.getAllNotAssigned()
+                .forEach {
+                    assign(it)
+                }
+        } else {
+            val order = orderRepository.findById(orderId)
+                ?: throw IllegalStateException("Order $orderId not found")
+            assign(order)
+        }
+    }
 
-                courier.assign(it)
+    private fun assign(to: Order) {
+        val readyCouriers = courierRepository.getAllReady()
 
-                courierRepository.update(courier)
-                orderRepository.update(it)
-            }
+        val courier = dispatcher.dispatch(to, readyCouriers)
+            ?: return
+
+        courier.assign(to)
+
+        courierRepository.update(courier)
+        orderRepository.update(to)
     }
 }

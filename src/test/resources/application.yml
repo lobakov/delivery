@@ -4,6 +4,8 @@ spring:
     username:
     password:
     driverClassName: org.h2.Driver
+  liquibase:
+    enabled: false
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
@@ -13,3 +15,7 @@ logging:
       springframework:
         web: DEBUG
       hibernate: DEBUG
+
+cron:
+  assign-orders: ${ASSIGN_ORDERS_JOB_SCHEDULE:0 */5 * * * *}
+  move-couriers: ${MOVE_COURIERS_JOB_SCHEDULE:0 */3 * * * *}
