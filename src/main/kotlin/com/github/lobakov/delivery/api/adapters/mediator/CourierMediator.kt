@@ -1,7 +1,7 @@
 package com.github.lobakov.delivery.api.adapters.mediator
 
-import com.github.lobakov.delivery.core.application.command.move.courier.MoveCourierCommand
-import com.github.lobakov.delivery.core.application.command.move.courier.MoveCourierHandler
+import com.github.lobakov.delivery.core.application.usecase.command.move.courier.MoveCourierCommand
+import com.github.lobakov.delivery.core.application.usecase.command.move.courier.MoveCourierHandler
 import org.springframework.stereotype.Component
 
 @Component

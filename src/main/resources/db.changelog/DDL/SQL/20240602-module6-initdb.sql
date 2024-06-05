@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS delivery.t_order (
     courier_id  UUID           REFERENCES delivery.t_courier (id);
 );
 
-CREATE INDEX courier_fk ON delivery.t_order (courier_id) WHERE courier_id IS NOT NULL;
+CREATE INDEX courier_fk_idx ON delivery.t_order (courier_id) WHERE courier_id IS NOT NULL;
 
 INSERT INTO delivery.t_courier(
     id, name, transport, current_location, status)

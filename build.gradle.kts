@@ -17,6 +17,13 @@ java.sourceCompatibility = JavaVersion.VERSION_17
 
 val springBootVersion = "3.2.4"
 val mapstructVersion = "1.5.5.Final"
+val liquiBaseVersion = "4.28.0"
+val postgresVersion = "42.7.3"
+val openApiStarterVersion = "2.5.0"
+val openApiGeneratorVersion = "7.6.0"
+val swaggerAnnotationsVerion = "2.2.7"
+val openApiKotlinVersion = "1.8.0"
+val h2Version = "2.2.224"
 
 repositories {
     mavenLocal()
@@ -24,7 +31,7 @@ repositories {
 }
 
 openApiGenerate {
-    generatorName.set("spring")
+    generatorName.set("kotlin-spring")
     inputSpec.set("$projectDir/src/main/resources/ui.contract/http-api.yml")
     outputDir.set("$buildDir/generated/openapi")
     apiPackage.set("com.github.lobakov.delivery.api.adapters.http.contract")
@@ -42,7 +49,7 @@ openApiGenerate {
 sourceSets {
     main {
         java {
-            srcDirs("$buildDir/generated/openapi/src/main/java")
+            srcDirs("$buildDir/generated/openapi/src/main/kotlin")
         }
     }
 }
@@ -55,21 +62,21 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion")
 
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
     implementation("org.mapstruct:mapstruct:$mapstructVersion")
     implementation("org.mapstruct:mapstruct-processor:$mapstructVersion")
 
-    implementation("org.liquibase:liquibase-core:4.28.0")
-    implementation("org.postgresql:postgresql:42.7.3")
+    implementation("org.liquibase:liquibase-core:$liquiBaseVersion")
+    implementation("org.postgresql:postgresql:$postgresVersion")
 
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
-    implementation("org.openapitools:openapi-generator-gradle-plugin:7.6.0")
-    implementation("io.swagger.core.v3:swagger-annotations:2.2.7")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$openApiStarterVersion")
+    implementation("org.openapitools:openapi-generator-gradle-plugin:$openApiGeneratorVersion")
+    implementation("io.swagger.core.v3:swagger-annotations:$swaggerAnnotationsVerion")
+    runtimeOnly("org.springdoc:springdoc-openapi-kotlin:$openApiKotlinVersion")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion") {
-        exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
-    }
-    testImplementation("org.junit.vintage:junit-vintage-engine:5.9.2")
-    testImplementation("com.h2database:h2:2.2.224")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
+    testImplementation("com.h2database:h2:$h2Version")
 }
 
 tasks.withType<KotlinCompile> {
