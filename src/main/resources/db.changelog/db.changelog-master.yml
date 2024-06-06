@@ -1,0 +1,4 @@
+databaseChangeLog:
+  - include:
+      file: ddl/20240602-module6-initdb.yml
+      relativeToChangelogFile: true

@@ -1,5 +1,6 @@
 package com.github.lobakov.delivery.core.domain.sharedkernel
 
+import com.github.lobakov.delivery.core.domain.sharedkernel.Weight.Companion.MAX_WEIGHT
 import com.github.lobakov.delivery.core.domain.sharedkernel.Weight.Companion.MIN_WEIGHT
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.assertThrows
@@ -10,7 +11,7 @@ import org.junit.jupiter.params.provider.ValueSource
 class WeightTest {
 
     @ParameterizedTest
-    @ValueSource(ints = [1, 13, 25, 500, 15, Integer.MAX_VALUE])
+    @ValueSource(ints = [1, 3, 5, 7, 8])
     fun `should allow create weight with valid amount of kilograms`(kg: Int) {
         val sut = Weight(kg)
 
@@ -18,9 +19,9 @@ class WeightTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = [Integer.MIN_VALUE, -10, -1, 0])
+    @ValueSource(ints = [Integer.MIN_VALUE, -10, -1, 0, 9])
     fun `should throw IllegalArgumentException when x or y is out of range`(kg: Int) {
-        val expectedExceptionMessage = "Weight should not be less than $MIN_WEIGHT kg"
+        val expectedExceptionMessage = "Weight is out of valid range. Weight should be in range [$MIN_WEIGHT..$MAX_WEIGHT]"
 
         val exception = assertThrows<IllegalArgumentException> { Weight(kg) }
 

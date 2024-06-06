@@ -79,6 +79,9 @@ class Courier(
     }
 
     fun close(order: Order) {
+        if (order.courierId != this.id)
+            throw IllegalAccessException("Order closing failed: courier tried to close someone else's order")
+
         order.complete()
         status = READY
     }
