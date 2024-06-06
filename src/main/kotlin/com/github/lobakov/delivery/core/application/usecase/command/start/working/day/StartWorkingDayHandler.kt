@@ -3,18 +3,18 @@ package com.github.lobakov.delivery.core.application.usecase.command.start.worki
 import com.github.lobakov.delivery.api.adapters.http.exception.CourierNotFoundException
 import com.github.lobakov.delivery.api.adapters.http.exception.InvalidCourierStateException
 import com.github.lobakov.delivery.core.application.usecase.shared.CommandHandler
-import com.github.lobakov.delivery.core.ports.courier.CourierRepository
+import com.github.lobakov.delivery.infrastructure.adapters.postgres.shared.RepositoryFacade
 import org.springframework.stereotype.Service
 
 @Service
 class StartWorkingDayHandler(
-    private val repository: CourierRepository
+    private val repositoryFacade: RepositoryFacade
 ) : CommandHandler<StartWorkingDayCommand> {
 
     override fun handle(command: StartWorkingDayCommand) {
         val id = command.courierId
 
-        val courier = repository.findById(id)
+        val courier = repositoryFacade.getCourierById(id)
             ?: throw CourierNotFoundException("Courier with id = $id not found")
 
         try {
@@ -23,6 +23,6 @@ class StartWorkingDayHandler(
             throw InvalidCourierStateException(e.localizedMessage)
         }
 
-        repository.update(courier)
+        repositoryFacade.updateCourier(courier)
     }
 }

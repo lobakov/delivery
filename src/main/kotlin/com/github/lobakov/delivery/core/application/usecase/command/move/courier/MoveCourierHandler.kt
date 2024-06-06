@@ -6,23 +6,21 @@ import com.github.lobakov.delivery.core.application.usecase.shared.CommandHandle
 import com.github.lobakov.delivery.core.domain.courier.Courier
 import com.github.lobakov.delivery.core.domain.order.Order
 import com.github.lobakov.delivery.core.domain.order.OrderStatus.CREATED
-import com.github.lobakov.delivery.core.ports.courier.CourierRepository
-import com.github.lobakov.delivery.core.ports.order.OrderRepository
+import com.github.lobakov.delivery.infrastructure.adapters.postgres.shared.RepositoryFacade
 import org.springframework.stereotype.Service
 
 @Service
 class MoveCourierHandler(
-    private val orderRepository: OrderRepository,
-    private val courierRepository: CourierRepository
+    private val repositoryFacade: RepositoryFacade
 ) : CommandHandler<MoveCourierCommand> {
 
     override fun handle(command: MoveCourierCommand) {
         val courierId = command.orderId
 
         if (courierId == null) {
-            val assignedOrders = orderRepository.getAllAssigned()
+            val assignedOrders = repositoryFacade.getAllAssignedOrders()
 
-            courierRepository.getAllBusy().forEach { courier ->
+            repositoryFacade.getAllBusyCouriers().forEach { courier ->
                 val matchingOrder = assignedOrders.firstOrNull { order ->
                     order.courierId == courier.id
                 } ?: return@forEach
@@ -30,10 +28,10 @@ class MoveCourierHandler(
                 moveAndUpdate(courier, matchingOrder)
             }
         } else {
-            val courier = courierRepository.findById(courierId)
+            val courier = repositoryFacade.getCourierById(courierId)
                 ?: throw CourierNotFoundException("Courier with id $courierId not found")
 
-            val order = orderRepository.findByCourierIdAndStatus(courierId, CREATED)
+            val order = repositoryFacade.findOrderByCourierIdAndStatus(courierId, CREATED)
                 ?: throw OrderNotFoundException(
                     "No orders found assigned to courier with id $courierId in status ${CREATED}"
                 )
@@ -48,9 +46,10 @@ class MoveCourierHandler(
 
         if (courier.hasReached(destination)) {
             courier.close(order)
+            repositoryFacade.updateCourierAndOrder(courier, order)
+            return
         }
 
-        courierRepository.update(courier)
-        orderRepository.update(order)
+        repositoryFacade.updateCourier(courier)
     }
 }
