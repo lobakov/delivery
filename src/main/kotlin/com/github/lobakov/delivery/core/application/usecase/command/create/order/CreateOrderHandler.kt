@@ -4,20 +4,20 @@ import com.github.lobakov.delivery.core.application.usecase.shared.CommandHandle
 import com.github.lobakov.delivery.core.domain.order.Order
 import com.github.lobakov.delivery.core.domain.sharedkernel.Location
 import com.github.lobakov.delivery.core.domain.sharedkernel.Weight
-import com.github.lobakov.delivery.core.ports.order.OrderRepository
+import com.github.lobakov.delivery.infrastructure.adapters.postgres.shared.RepositoryFacade
 import org.springframework.stereotype.Service
 import java.util.UUID
 
 @Service
 class CreateOrderHandler(
-    private val repository: OrderRepository
+    private val repositoryFacade: RepositoryFacade
 ) : CommandHandler<CreateOrderCommand> {
 
     override fun handle(command: CreateOrderCommand) {
         val basketId = command.basketId
 
         if (basketId == null) {
-            repository.add(
+            repositoryFacade.addOrder(
                 Order(
                     id = UUID.randomUUID(),
                     deliverTo = Location.getRandomLocation(),
@@ -25,7 +25,7 @@ class CreateOrderHandler(
                 )
             )
         } else {
-            repository.findById(command.basketId)
+            repositoryFacade.getOrderById(command.basketId)
                 ?: {
                     val orderId = command.basketId
                     val location = Location.fromAddress(command.address!!)
@@ -33,7 +33,7 @@ class CreateOrderHandler(
 
                     val order = Order(orderId, location, weight)
 
-                    repository.add(order)
+                    repositoryFacade.addOrder(order)
                 }
         }
     }

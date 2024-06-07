@@ -7,7 +7,7 @@ import com.github.lobakov.delivery.core.application.usecase.command.assign.order
 import com.github.lobakov.delivery.core.application.usecase.command.assign.order.AssignOrderHandler
 import com.github.lobakov.delivery.core.application.usecase.command.create.order.CreateOrderCommand
 import com.github.lobakov.delivery.core.application.usecase.command.create.order.CreateOrderHandler
-import com.github.lobakov.delivery.core.application.usecase.query.get.order.GetOrderCommand
+import com.github.lobakov.delivery.core.application.usecase.query.get.order.GetOrderQuery
 import com.github.lobakov.delivery.core.application.usecase.query.get.order.GetOrderHandler
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -32,7 +32,7 @@ class OrderController(
     }
 
     override fun getOrder(orderId: UUID): ResponseEntity<Order> {
-        val orderDto = getOrderHandler.handle(GetOrderCommand(orderId))
+        val orderDto = getOrderHandler.handle(GetOrderQuery(orderId))
 
         return ResponseEntity.ok()
             .body(
