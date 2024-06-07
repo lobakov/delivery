@@ -8,4 +8,6 @@ import java.util.UUID
 interface OrderRepositoryJpa : JpaRepository<OrderEntity, UUID> {
 
     fun findAllByStatus(status: OrderStatus): List<OrderEntity>
+
+    fun findByCourierIdAndStatus(courierId: UUID, status: OrderStatus): OrderEntity?
 }

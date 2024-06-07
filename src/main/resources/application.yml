@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/delivery
+    username: postgres
+    password: postgres
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yml
+    enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+
+logging:
+  level: INFO
+
+cron:
+  assign-orders: ${ASSIGN_ORDERS_JOB_SCHEDULE:0 */5 * * * *}
+  move-couriers: ${MOVE_COURIERS_JOB_SCHEDULE:0 */3 * * * *}

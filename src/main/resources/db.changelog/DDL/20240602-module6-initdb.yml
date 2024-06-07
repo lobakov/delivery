@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20240602-module6-initdb
+      author: Lobakov Roman
+      changes:
+        - sqlFile:
+            dbms: postgresql
+            splitStatements: true
+            path: sql/20240602-module6-initdb.sql
+            relativeToChangelogFile: true

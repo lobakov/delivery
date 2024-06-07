@@ -2,6 +2,8 @@ package com.github.lobakov.delivery.core.domain.sharedkernel
 
 import kotlin.math.abs
 import kotlin.math.sign
+import kotlin.random.Random
+import kotlin.random.nextInt
 
 data class Location(
     val x: Int,
@@ -59,6 +61,8 @@ data class Location(
         return newLocation
     }
 
+
+
     companion object {
         const val MIN_X = 1
         const val MIN_Y = 1
@@ -69,8 +73,24 @@ data class Location(
         const val UP = -1
         const val DOWN = 1
         const val STEP = 1
+        const val SEPARATOR = ", "
         val X_RANGE = MIN_X..MAX_X
         val Y_RANGE = MIN_Y..MAX_Y
         val INITIAL_LOCATION = Location(1, 1)
+
+        fun getRandomLocation(): Location {
+            val x = Random.nextInt(MIN_X..MAX_X)
+            val y = Random.nextInt(MIN_Y..MAX_Y)
+            return Location(x, y)
+        }
+
+        fun fromAddress(address: String): Location {
+            val coordinates = address
+                .split(SEPARATOR)
+                .map { it.toIntOrNull() }
+                .requireNoNulls()
+
+            return Location(coordinates[0], coordinates[1])
+        }
     }
 }

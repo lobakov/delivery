@@ -31,6 +31,12 @@ class OrderRepositoryImpl(
     }
 
     @Transactional
+    override fun findByCourierIdAndStatus(id: UUID, status: OrderStatus): Order? {
+        val orderEntity = repository.findByCourierIdAndStatus(id, status)
+        return if (orderEntity != null) mapper.toAggregate(orderEntity) else null
+    }
+
+    @Transactional
     override fun findById(id: UUID): Order? {
         return repository.findById(id)
             .map { mapper.toAggregate(it) }
