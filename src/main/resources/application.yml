@@ -12,8 +12,16 @@ spring:
     show-sql: false
 
 logging:
-  level: INFO
+  level:
+    org:
+      springframework:
+        web: DEBUG
+      hibernate: DEBUG
 
 cron:
   assign-orders: ${ASSIGN_ORDERS_JOB_SCHEDULE:0 */5 * * * *}
   move-couriers: ${MOVE_COURIERS_JOB_SCHEDULE:0 */3 * * * *}
+
+geo:
+  url: ${GEO_SERVICE_URL:localhost}
+  port: ${GEO_SERVICE_PORT:5004}
