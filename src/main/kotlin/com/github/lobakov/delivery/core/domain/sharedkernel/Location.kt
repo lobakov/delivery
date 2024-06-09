@@ -83,14 +83,5 @@ data class Location(
             val y = Random.nextInt(MIN_Y..MAX_Y)
             return Location(x, y)
         }
-
-        fun fromAddress(address: String): Location {
-            val coordinates = address
-                .split(SEPARATOR)
-                .map { it.toIntOrNull() }
-                .requireNoNulls()
-
-            return Location(coordinates[0], coordinates[1])
-        }
     }
 }

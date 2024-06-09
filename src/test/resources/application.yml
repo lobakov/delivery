@@ -16,6 +16,16 @@ logging:
         web: DEBUG
       hibernate: DEBUG
 
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
+
 cron:
   assign-orders: ${ASSIGN_ORDERS_JOB_SCHEDULE:0 */5 * * * *}
   move-couriers: ${MOVE_COURIERS_JOB_SCHEDULE:0 */3 * * * *}
+
+geo:
+  url: ${GEO_SERVICE_URL:localhost}
+  port: ${GEO_SERVICE_PORT:5004}
