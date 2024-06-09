@@ -4,7 +4,7 @@ plugins {
     id("org.springframework.boot") version "3.2.4"
     id("io.spring.dependency-management") version "1.1.2"
     id("org.openapi.generator") version "7.5.0"
-    id("org.sonarqube") version "3.2.0"
+    id("com.google.protobuf") version "0.9.4"
     kotlin("jvm") version "1.9.10"
     kotlin("plugin.spring") version "1.9.10"
     kotlin("plugin.jpa") version "1.9.10"
@@ -24,10 +24,22 @@ val openApiGeneratorVersion = "7.6.0"
 val swaggerAnnotationsVerion = "2.2.7"
 val openApiKotlinVersion = "1.8.0"
 val h2Version = "2.2.224"
+val protocVersion = "3.10.0"
+val grpcStarterVersion = "5.1.5"
+val grpcVersion = "1.2.4"
+val protocGenVersion = "1.4.1"
+val protobufKotlinVersion = "4.27.1"
 
 repositories {
     mavenLocal()
     mavenCentral()
+}
+
+protobuf {
+
+    protoc {
+        artifact = "com.google.protobuf:protoc:$protocVersion"
+    }
 }
 
 openApiGenerate {
@@ -48,7 +60,10 @@ openApiGenerate {
 
 sourceSets {
     main {
-        java {
+        proto {
+            srcDirs("src/main/kotlin/com/github/lobakov/delivery/infrastructure/adapters/grpc/proto")
+        }
+        kotlin {
             srcDirs("$buildDir/generated/openapi/src/main/kotlin")
         }
     }
@@ -61,6 +76,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion")
+
+    implementation("io.github.lognet:grpc-spring-boot-starter:$grpcStarterVersion")
+    implementation("com.salesforce.servicelibs:reactor-grpc:$grpcVersion")
+    implementation("com.google.protobuf:protobuf-kotlin:$protobufKotlinVersion")
+    implementation("io.grpc:protoc-gen-grpc-kotlin:$protocGenVersion")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
@@ -85,6 +105,7 @@ tasks.withType<KotlinCompile> {
         jvmTarget = "17"
     }
     dependsOn(tasks.openApiGenerate)
+    dependsOn(tasks.generateProto)
 }
 
 tasks.withType<Test> {
