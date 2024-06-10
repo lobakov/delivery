@@ -1,4 +1,4 @@
-package com.github.lobakov.delivery.infrastructure.adapters.grpc
+package com.github.lobakov.delivery.infrastructure.adapters.grpc.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration

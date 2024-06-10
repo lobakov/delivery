@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package com.github.lobakov.delivery.infrastructure.adapters.kafka.order.status.changed.producer;
+
+option java_multiple_files = true;
+
+enum OrderStatus {
+  None = 0;
+  Created = 1;
+  Assigned = 2;
+  Completed = 3;
+}
+
+message OrderStatusChangedIntegrationEvent {
+  string orderId = 1;
+  OrderStatus orderStatus = 2;
+}

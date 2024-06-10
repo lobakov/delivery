@@ -4,13 +4,15 @@ package com.github.lobakov.delivery.core.application.usecase.command.assign.orde
 import com.github.lobakov.delivery.core.application.usecase.shared.CommandHandler
 import com.github.lobakov.delivery.core.domain.order.Order
 import com.github.lobakov.delivery.core.domainservices.DispatchService
+import com.github.lobakov.delivery.core.ports.notifier.NotifierService
 import com.github.lobakov.delivery.infrastructure.adapters.postgres.shared.RepositoryFacade
 import org.springframework.stereotype.Service
 
 @Service
 class AssignOrderHandler(
     private val dispatcher: DispatchService,
-    private val repositoryFacade: RepositoryFacade
+    private val repositoryFacade: RepositoryFacade,
+    private val notifierService: NotifierService
 ) : CommandHandler<AssignOrderCommand> {
 
     override fun handle(command: AssignOrderCommand) {
@@ -37,5 +39,6 @@ class AssignOrderHandler(
         courier.assign(order)
 
         repositoryFacade.updateCourierAndOrder(courier, order)
+        notifierService.notify(order.id, order.status)
     }
 }

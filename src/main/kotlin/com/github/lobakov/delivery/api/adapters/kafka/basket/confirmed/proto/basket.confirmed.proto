@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package com.github.lobakov.delivery.api.adapters.kafka.basket.confirmed.consumer;
+
+option java_multiple_files = true;
+
+message BasketConfirmedIntegrationEvent {
+  string basketId = 1;
+  string address = 2;
+  int32 weight = 3;
+}
