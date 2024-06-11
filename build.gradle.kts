@@ -89,7 +89,10 @@ sourceSets {
     main {
         proto {
             srcDirs("src/main/kotlin/com/github/lobakov/delivery/infrastructure/adapters/grpc/proto")
+            srcDirs("src/main/kotlin/com/github/lobakov/delivery/api/adapters/kafka/basket/confirmed/proto")
+            srcDirs("src/main/kotlin/com/github/lobakov/delivery/infrastructure/adapters/kafka/order/status/changed/proto")
         }
+
         kotlin {
             srcDirs("$buildDir/generated/openapi/src/main/kotlin")
         }
@@ -101,31 +104,24 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
 
-
     implementation("org.springframework.boot:spring-boot-starter:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion")
-
+    implementation("org.springframework.kafka:spring-kafka")
 
     implementation("io.grpc:grpc-kotlin-stub:$grpcKotlinStubVersion")
     implementation("io.grpc:protoc-gen-grpc-kotlin:$protocGenVersion")
     implementation("io.grpc:grpc-protobuf:$grpcVersion")
-
     implementation("com.google.protobuf:protobuf-kotlin:$protobufKotlinVersion")
-
     implementation("io.github.lognet:grpc-spring-boot-starter:$grpcStarterVersion")
 
-
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-
 
     implementation("org.mapstruct:mapstruct:$mapstructVersion")
     implementation("org.mapstruct:mapstruct-processor:$mapstructVersion")
 
-
     implementation("org.liquibase:liquibase-core:$liquiBaseVersion")
     implementation("org.postgresql:postgresql:$postgresVersion")
-
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$openApiStarterVersion")
     implementation("org.openapitools:openapi-generator-gradle-plugin:$openApiGeneratorVersion")

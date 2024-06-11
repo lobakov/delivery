@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package com.github.lobakov.delivery.infrastructure.adapters.grpc.client;
+package com.github.lobakov.delivery.infrastructure.adapters.grpc.geo;
 
 option java_multiple_files = true;
 

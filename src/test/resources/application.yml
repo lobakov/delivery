@@ -8,6 +8,14 @@ spring:
     enabled: false
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_HOST:localhost:9092}
+    consumer:
+      group-id: "DeliveryConsumerGroup"
+      enable-auto-offset-store: false
+      enable-auto-commit: true
+      auto-offset-reset: earliest
+      enable-partition-eof: true
 
 logging:
   level:

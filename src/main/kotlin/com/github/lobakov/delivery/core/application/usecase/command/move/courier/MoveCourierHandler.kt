@@ -6,12 +6,14 @@ import com.github.lobakov.delivery.core.application.usecase.shared.CommandHandle
 import com.github.lobakov.delivery.core.domain.courier.Courier
 import com.github.lobakov.delivery.core.domain.order.Order
 import com.github.lobakov.delivery.core.domain.order.OrderStatus.CREATED
+import com.github.lobakov.delivery.core.ports.notifier.NotifierService
 import com.github.lobakov.delivery.infrastructure.adapters.postgres.shared.RepositoryFacade
 import org.springframework.stereotype.Service
 
 @Service
 class MoveCourierHandler(
-    private val repositoryFacade: RepositoryFacade
+    private val repositoryFacade: RepositoryFacade,
+    private val notifierService: NotifierService
 ) : CommandHandler<MoveCourierCommand> {
 
     override fun handle(command: MoveCourierCommand) {
@@ -47,6 +49,7 @@ class MoveCourierHandler(
         if (courier.hasReached(destination)) {
             courier.close(order)
             repositoryFacade.updateCourierAndOrder(courier, order)
+            notifierService.notify(order.id, order.status)
             return
         }
 
